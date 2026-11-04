@@ -42,13 +42,13 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
                 <div class="flex items-center space-x-3">
-                    <img src="Logo.png" alt="Lavender Games Logo" class="h-12 w-12 object-contain rounded-lg bg-gray-800 p-1 border border-gray-700">
+                    <img src="Logo.png" alt="Lavender Games Logo" class="h-12 w-12 object-contain rounded-lg bg-gray-800 p-1 border border-gray-700" onerror="this.src='LogoLavender.png'">
                     <div>
                         <span class="text-3xl font-comic tracking-wider text-brand-accent drop-shadow">LIGA HEROCLIX</span>
                         <p class="text-xs text-gray-400 font-medium tracking-wide uppercase">Lavender Games (Gijón) • Edición Especial</p>
                     </div>
                 </div>
-                <!-- Menú de navegación principal -->
+                <!-- Menú de navegación principal con control de pestañas directo -->
                 <div class="flex space-x-1">
                     <button type="button" onclick="openTab('standings')" id="btn-nav-standings" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition bg-brand-accent text-black"><i class="fa-solid fa-trophy mr-1.5"></i> Clasificación</button>
                     <button type="button" onclick="openTab('rounds')" id="btn-nav-rounds" class="nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition text-gray-300 hover:text-white hover:bg-gray-800"><i class="fa-solid fa-calendar-days mr-1.5"></i> Jornadas</button>
@@ -71,4 +71,512 @@
             
             <div class="bg-brand-card rounded-xl border border-gray-800 shadow-xl overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-900/80 text-gray-400 text-xs uppercase tracking-wider border-b border-gray-800">
+                                <th class="py-4 px-4 text-center w-16">Pos</th>
+                                <th class="py-4 px-6">Jugador</th>
+                                <th class="py-4 px-4 text-center">Lista HCUnits</th>
+                                <th class="py-4 px-4 text-center">Ptos Liga</th>
+                                <th class="py-4 px-4 text-center">J</th>
+                                <th class="py-4 px-4 text-center">G</th>
+                                <th class="py-4 px-4 text-center">E</th>
+                                <th class="py-4 px-4 text-center">P</th>
+                                <th class="py-4 px-4 text-center">No Presentado</th>
+                                <th class="py-4 px-4 text-center">Desempate (TP)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standings-tbody" class="divide-y divide-gray-800 text-sm">
+                            <!-- Se rellena dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 2: JORNADAS -->
+        <div id="view-rounds" class="view-section hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                <div>
+                    <h1 class="text-4xl font-comic text-brand-accent flex items-center"><i class="fa-solid fa-calendar-days mr-3"></i> Jornadas de la Liga</h1>
+                    <p id="round-format-banner" class="text-brand-accent font-semibold text-sm mt-1">Formato de la jornada...</p>
+                </div>
+                <select id="round-selector" onchange="changeActiveRound(this.value)" class="bg-brand-card border border-gray-700 text-white rounded-lg px-4 py-2 font-semibold focus:outline-none focus:border-brand-accent">
+                    <!-- Opciones de rondas -->
+                </select>
+            </div>
+            
+            <div id="rounds-container" class="space-y-4">
+                <!-- Emparejamientos -->
+            </div>
+        </div>
+
+        <!-- VISTA 3: FORMATOS Y REGLAMENTO -->
+        <div id="view-rules" class="view-section hidden">
+            <h1 class="text-4xl font-comic text-brand-accent mb-6 flex items-center"><i class="fa-solid fa-book-open mr-3"></i> Sistema de Puntuación y Formatos</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Puntuación -->
+                <div class="bg-brand-card p-6 rounded-xl border border-gray-800 shadow-xl">
+                    <h2 class="text-xl font-bold text-white mb-4"><i class="fa-solid fa-star text-brand-accent mr-2"></i> Puntuación Oficial</h2>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li class="flex justify-between items-center bg-gray-900 p-3 rounded-lg border border-gray-800">
+                            <span>Asistencia a la jornada</span>
+                            <span class="text-brand-accent font-bold">+1 Punto</span>
+                        </li>
+                        <li class="flex justify-between items-center bg-gray-900 p-3 rounded-lg border border-gray-800">
+                            <span>Victoria en el encuentro</span>
+                            <span class="text-green-400 font-bold">+3 Puntos</span>
+                        </li>
+                        <li class="flex justify-between items-center bg-gray-900 p-3 rounded-lg border border-gray-800">
+                            <span>No presentado (Default)</span>
+                            <span class="text-red-400 font-bold">-1 Punto</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Herramientas HCUnits -->
+                <div class="bg-brand-card p-6 rounded-xl border border-gray-800 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-shield-halved text-brand-blue mr-2"></i> Herramienta de Listas</h2>
+                        <p class="text-sm text-gray-400 mb-4">Utiliza la plataforma oficial HCUnits para diseñar, validar y compartir tus ejércitos de HeroClix para cada formato de la liga en Lavender Games.</p>
+                    </div>
+                    <a href="https://hcunits.net" target="_blank" rel="noopener noreferrer" class="bg-brand-blue hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg text-center transition block"><i class="fa-solid fa-external-link-alt mr-2"></i> Ir a HCUnits Builder</a>
+                </div>
+            </div>
+
+            <h2 class="text-2xl font-comic text-brand-accent mb-4">Los 10 Formatos de la Liga</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="formats-grid">
+                <!-- Formatos -->
+            </div>
+        </div>
+
+        <!-- VISTA 4: PANEL DE ADMINISTRADOR -->
+        <div id="view-admin" class="view-section hidden">
+            <div id="admin-login-container" class="max-w-md mx-auto bg-brand-card p-8 rounded-xl border border-gray-800 shadow-xl mt-12">
+                <h2 class="text-3xl font-comic text-brand-purple mb-4 text-center"><i class="fa-solid fa-lock mr-2"></i> Acceso Administrador</h2>
+                <p class="text-sm text-gray-400 mb-6 text-center">Introduce la contraseña de Lavender Games para gestionar la liga.</p>
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase mb-2">Contraseña</label>
+                        <input type="password" id="admin-password-input" required class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-purple">
+                    </div>
+                    <button type="submit" class="w-full bg-brand-purple hover:bg-purple-600 text-white font-bold py-2.5 rounded-lg transition">Desbloquear Panel</button>
+                </form>
+            </div>
+
+            <div id="admin-dashboard" class="hidden space-y-8">
+                <div class="flex items-center justify-between bg-brand-card p-6 rounded-xl border border-gray-800">
+                    <div>
+                        <h2 class="text-3xl font-comic text-brand-purple">Panel de Control - Lavender Games</h2>
+                        <p class="text-sm text-gray-400">Inscribe jugadores, añade sus enlaces de HCUnits y registra resultados.</p>
+                    </div>
+                    <button type="button" onclick="handleAdminLogout()" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 px-4 py-2 rounded-lg text-sm font-semibold border border-red-500/30 transition"><i class="fa-solid fa-right-from-bracket mr-2"></i> Cerrar Sesión</button>
+                </div>
+
+                <!-- Gestión de Jugadores y HCUnits -->
+                <div class="bg-brand-card p-6 rounded-xl border border-gray-800 shadow-xl">
+                    <h3 class="text-xl font-bold text-white mb-4"><i class="fa-solid fa-users mr-2 text-brand-accent"></i> Inscripción de Participantes y Listas HCUnits</h3>
+                    <form onsubmit="addPlayer(event)" class="flex flex-col sm:flex-row gap-3 mb-6">
+                        <input type="text" id="new-player-name" placeholder="Nombre del jugador..." required class="flex-grow bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-accent">
+                        <input type="url" id="new-player-hcunits" placeholder="Enlace de la lista en HCUnits (opcional)..." class="flex-grow bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-accent">
+                        <button type="submit" class="bg-brand-accent hover:bg-amber-600 text-black font-bold px-6 py-2 rounded-lg transition"><i class="fa-solid fa-user-plus mr-1"></i> Añadir</button>
+                    </form>
+                    <div id="admin-players-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                        <!-- Lista de jugadores en admin -->
+                    </div>
+                </div>
+
+                <!-- Gestión de Rondas y Resultados -->
+                <div class="bg-brand-card p-6 rounded-xl border border-gray-800 shadow-xl">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                        <h3 class="text-xl font-bold text-white"><i class="fa-solid fa-clipboard-user mr-2 text-brand-blue"></i> Emparejamientos y Resultados</h3>
+                        <div class="flex gap-2">
+                            <select id="admin-round-select" onchange="renderAdminMatches(this.value)" class="bg-gray-900 border border-gray-700 text-white rounded-lg px-3 py-1.5 text-sm font-semibold focus:outline-none">
+                            </select>
+                            <button type="button" onclick="generatePairings()" class="bg-brand-blue hover:bg-blue-600 text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition"><i class="fa-solid fa-shuffle mr-1"></i> Generar Emparejamientos</button>
+                        </div>
+                    </div>
+                    <div id="admin-matches-container" class="space-y-4">
+                        <!-- Partidos -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-brand-card border-t border-gray-800 py-6 text-center text-sm text-gray-500 mt-12">
+        <p>Liga Oficial HeroClix - Organizada en Lavender Games (Gijón).</p>
+    </footer>
+
+    <!-- Lógica de la Aplicación -->
+    <script>
+        const ADMIN_PASS = "lavender2026";
+
+        const roundFormats = {
+            1: "Jornada 1: Modern Age Estándar (300 Puntos)",
+            2: "Jornada 2: Singleton (Sin piezas repetidas en el Roster - 400 Puntos)",
+            3: "Jornada 3: Tema Libre / Theme Team Obligatorio (300 Puntos)",
+            4: "Jornada 4: Sin Recursos ni Objetivos Externos (Pura miniatura - 400 Puntos)",
+            5: "Jornada 5: Gigantes y Colosales Permitidos (500 Puntos)",
+            6: "Jornada 6: Restricción de Rarezas (Máximo 1 Súper Rara o Chase - 300 Puntos)",
+            7: "Jornada 7: Golden Age Lavender (Todo legal desde la creación del juego - 400 Puntos)",
+            8: "Jornada 8: Equipos Monofacción (Todas las figuras deben compartir una keyword - 300 Puntos)",
+            9: "Jornada 9: Estilo Libre Sin Límite de Recursos (Todo vale - 500 Puntos)",
+            10: "Jornada 10: Gran Final de Maestros (400 Puntos - Formato Cerrado)"
+        };
+
+        let leagueData = JSON.parse(localStorage.getItem('lavender_heroclix_league_data')) || {
+            players: [],
+            rounds: {}
+        };
+
+        let currentActiveRound = 1;
+
+        // Función directa para alternar pestañas del menú de forma instantánea
+        function openTab(tabId) {
+            const tabs = ['standings', 'rounds', 'rules', 'admin'];
+            
+            tabs.forEach(t => {
+                const btn = document.getElementById('btn-nav-' + t);
+                const sec = document.getElementById('view-' + t);
+                
+                if (t === tabId) {
+                    if (sec) sec.classList.remove('hidden');
+                    if (btn) {
+                        btn.className = "nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition bg-brand-accent text-black";
+                    }
+                } else {
+                    if (sec) sec.classList.add('hidden');
+                    if (btn) {
+                        btn.className = "nav-btn px-3 py-2 rounded-lg text-sm font-semibold transition text-gray-300 hover:text-white hover:bg-gray-800";
+                    }
+                }
+            });
+            
+            updateUI();
+        }
+
+        function saveData() {
+            localStorage.setItem('lavender_heroclix_league_data', JSON.stringify(leagueData));
+            updateUI();
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('admin-password-input').value;
+            if (pass === ADMIN_PASS) {
+                document.getElementById('admin-login-container').classList.add('hidden');
+                document.getElementById('admin-dashboard').classList.remove('hidden');
+                updateAdminUI();
+            } else {
+                alert('Contraseña incorrecta.');
+            }
+        }
+
+        function handleAdminLogout() {
+            document.getElementById('admin-login-container').classList.remove('hidden');
+            document.getElementById('admin-dashboard').classList.add('hidden');
+            document.getElementById('admin-password-input').value = '';
+        }
+
+        function addPlayer(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('new-player-name');
+            const hcunitsInput = document.getElementById('new-player-hcunits');
+            const name = nameInput.value.trim();
+            const hcunits = hcunitsInput.value.trim();
+            if(!name) return;
+
+            leagueData.players.push({ id: Date.now(), name: name, hcunits: hcunits });
+            nameInput.value = '';
+            hcunitsInput.value = '';
+            saveData();
+            updateAdminUI();
+        }
+
+        function deletePlayer(id) {
+            leagueData.players = leagueData.players.filter(p => p.id !== id);
+            saveData();
+            updateAdminUI();
+        }
+
+        function generatePairings() {
+            const roundNum = document.getElementById('admin-round-select').value;
+            const players = [...leagueData.players];
+            
+            if(players.length < 2) {
+                alert("Necesitas al menos 2 jugadores inscritos para generar emparejamientos.");
+                return;
+            }
+
+            for (let i = players.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [players[i], players[j]] = [players[j], players[i]];
+            }
+
+            let matches = [];
+            for (let i = 0; i < players.length; i += 2) {
+                if (i + 1 < players.length) {
+                    matches.push({
+                        p1: players[i].name,
+                        p2: players[i+1].name,
+                        status1: 'normal',
+                        status2: 'normal',
+                        score1: '',
+                        score2: ''
+                    });
+                } else {
+                    matches.push({
+                        p1: players[i].name,
+                        p2: 'DESCANSA (BYE)',
+                        status1: 'win',
+                        status2: 'bye',
+                        score1: 3,
+                        score2: 0
+                    });
+                }
+            }
+
+            leagueData.rounds[roundNum] = matches;
+            saveData();
+            renderAdminMatches(roundNum);
+        }
+
+        function updateMatchStatus(roundNum, matchIdx, playerNum, statusVal) {
+            let match = leagueData.rounds[roundNum][matchIdx];
+            if(playerNum === 1) {
+                match.status1 = statusVal;
+                if(statusVal === 'np') match.score1 = 0;
+            } else {
+                match.status2 = statusVal;
+                if(statusVal === 'np') match.score2 = 0;
+            }
+            saveData();
+            renderAdminMatches(roundNum);
+        }
+
+        function updateMatchScore(roundNum, matchIdx, p1Score, p2Score) {
+            if(leagueData.rounds[roundNum] && leagueData.rounds[roundNum][matchIdx]) {
+                leagueData.rounds[roundNum][matchIdx].score1 = p1Score === '' ? '' : Number(p1Score);
+                leagueData.rounds[roundNum][matchIdx].score2 = p2Score === '' ? '' : Number(p2Score);
+                saveData();
+            }
+        }
+
+        function calculateStandings() {
+            let stats = {};
+            leagueData.players.forEach(p => {
+                stats[p.name] = { name: p.name, hcunits: p.hcunits || '', pts: 0, played: 0, won: 0, drawn: 0, lost: 0, np: 0, tp: 0 };
+            });
+
+            Object.values(leagueData.rounds).forEach(roundMatches => {
+                roundMatches.forEach(m => {
+                    if(!stats[m.p1]) stats[m.p1] = { name: m.p1, hcunits: '', pts: 0, played: 0, won: 0, drawn: 0, lost: 0, np: 0, tp: 0 };
+                    
+                    if(m.status1 === 'np') {
+                        stats[m.p1].np++;
+                        stats[m.p1].pts -= 1;
+                    } else if(m.score1 !== '' && m.score2 !== '' && m.p2 !== 'DESCANSA (BYE)') {
+                        stats[m.p1].played++;
+                        stats[m.p1].pts += 1;
+                        stats[m.p1].tp += m.score1;
+
+                        if(m.status1 === 'win' || (m.score1 > m.score2 && m.status2 !== 'np')) {
+                            stats[m.p1].pts += 3;
+                            stats[m.p1].won++;
+                        } else if(m.status2 === 'np') {
+                            stats[m.p1].pts += 3;
+                            stats[m.p1].won++;
+                        } else if(m.score1 === m.score2) {
+                            stats[m.p1].drawn++;
+                        } else {
+                            stats[m.p1].lost++;
+                        }
+                    } else if(m.p2 === 'DESCANSA (BYE)' && m.score1 !== '') {
+                        stats[m.p1].played++;
+                        stats[m.p1].pts += 1 + 3;
+                        stats[m.p1].won++;
+                    }
+
+                    if(m.p2 !== 'DESCANSA (BYE)') {
+                        if(!stats[m.p2]) stats[m.p2] = { name: m.p2, hcunits: '', pts: 0, played: 0, won: 0, drawn: 0, lost: 0, np: 0, tp: 0 };
+
+                        if(m.status2 === 'np') {
+                            stats[m.p2].np++;
+                            stats[m.p2].pts -= 1;
+                        } else if(m.score1 !== '' && m.score2 !== '') {
+                            stats[m.p2].played++;
+                            stats[m.p2].pts += 1;
+                            stats[m.p2].tp += m.score2;
+
+                            if(m.status2 === 'win' || (m.score2 > m.score1 && m.status1 !== 'np')) {
+                                stats[m.p2].pts += 3;
+                                stats[m.p2].won++;
+                            } else if(m.status1 === 'np') {
+                                stats[m.p2].pts += 3;
+                                stats[m.p2].won++;
+                            } else if(m.score1 === m.score2) {
+                                stats[m.p2].drawn++;
+                            } else {
+                                stats[m.p2].lost++;
+                            }
+                        }
+                    }
+                });
+            });
+
+            return Object.values(stats).sort((a, b) => b.pts - a.pts || b.tp - a.tp);
+        }
+
+        function updateUI() {
+            const tbody = document.getElementById('standings-tbody');
+            const standings = calculateStandings();
+            
+            if(tbody) {
+                if(standings.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="10" class="py-6 px-4 text-center text-gray-500">No hay participantes registrados todavía.</td></tr>`;
+                } else {
+                    tbody.innerHTML = standings.map((st, index) => `
+                        <tr class="hover:bg-gray-800/50 transition">
+                            <td class="py-3 px-4 text-center font-bold text-brand-accent">${index + 1}</td>
+                            <td class="py-3 px-6 font-semibold text-white">${st.name}</td>
+                            <td class="py-3 px-4 text-center">
+                                ${st.hcunits ? `<a href="${st.hcunits}" target="_blank" rel="noopener noreferrer" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 px-3 py-1 rounded-lg text-xs font-bold border border-blue-500/30 inline-flex items-center"><i class="fa-solid fa-link mr-1.5"></i> Ver Lista</a>` : `<span class="text-gray-600 text-xs">-</span>`}
+                            </td>
+                            <td class="py-3 px-4 text-center font-bold text-brand-accent">${st.pts}</td>
+                            <td class="py-3 px-4 text-center text-gray-300">${st.played}</td>
+                            <td class="py-3 px-4 text-center text-green-400">${st.won}</td>
+                            <td class="py-3 px-4 text-center text-yellow-400">${st.drawn}</td>
+                            <td class="py-3 px-4 text-center text-red-400">${st.lost}</td>
+                            <td class="py-3 px-4 text-center text-orange-400">${st.np}</td>
+                            <td class="py-3 px-4 text-center text-gray-400">${st.tp}</td>
+                        </tr>
+                    `).join('');
+                }
+            }
+
+            let roundOptionsHtml = '';
+            for(let i=1; i<=10; i++) {
+                roundOptionsHtml += `<option value="${i}" ${currentActiveRound == i ? 'selected' : ''}>Jornada ${i}</option>`;
+            }
+            const roundSelect = document.getElementById('round-selector');
+            if(roundSelect) roundSelect.innerHTML = roundOptionsHtml;
+            
+            const roundBanner = document.getElementById('round-format-banner');
+            if(roundBanner) roundBanner.innerText = roundFormats[currentActiveRound];
+
+            const roundsContainer = document.getElementById('rounds-container');
+            if(roundsContainer) {
+                const currentMatches = leagueData.rounds[currentActiveRound] || [];
+                if(currentMatches.length === 0) {
+                    roundsContainer.innerHTML = `<div class="bg-brand-card p-6 rounded-xl border border-gray-800 text-gray-400 text-center">No hay emparejamientos generados para esta jornada.</div>`;
+                } else {
+                    roundsContainer.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">` + currentMatches.map(m => `
+                        <div class="bg-brand-card p-4 rounded-xl border border-gray-800 flex items-center justify-between shadow">
+                            <div class="flex-grow text-right pr-4 font-semibold text-white ${m.status1 === 'np' ? 'line-through text-red-400' : ''}">${m.p1}</div>
+                            <div class="bg-gray-900 px-4 py-2 rounded-lg border border-gray-700 text-brand-accent font-bold tracking-widest text-center min-w-[90px]">
+                                ${m.score1 !== '' ? m.score1 : '-'} : ${m.score2 !== '' ? m.score2 : '-'}
+                            </div>
+                            <div class="flex-grow text-left pl-4 font-semibold text-white ${m.status2 === 'np' ? 'line-through text-red-400' : ''}">${m.p2}</div>
+                        </div>
+                    `).join('') + `</div>`;
+                }
+            }
+
+            const formatsGrid = document.getElementById('formats-grid');
+            if(formatsGrid) {
+                let formatsHtml = '';
+                for(let i=1; i<=10; i++) {
+                    formatsHtml += `
+                        <div class="bg-brand-card p-4 rounded-xl border border-gray-800 flex items-start space-x-3">
+                            <span class="bg-brand-accent text-black font-bold px-3 py-1 rounded-lg text-sm">R${i}</span>
+                            <div>
+                                <h3 class="text-white font-bold">Jornada ${i}</h3>
+                                <p class="text-sm text-gray-400">${roundFormats[i].split(': ')[1]}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                formatsGrid.innerHTML = formatsHtml;
+            }
+        }
+
+        function changeActiveRound(roundVal) {
+            currentActiveRound = roundVal;
+            updateUI();
+        }
+
+        function updateAdminUI() {
+            const adminPlayersList = document.getElementById('admin-players-list');
+            if(adminPlayersList) {
+                if(leagueData.players.length === 0) {
+                    adminPlayersList.innerHTML = `<p class="text-sm text-gray-500 col-span-full">Aún no hay jugadores añadidos.</p>`;
+                } else {
+                    adminPlayersList.innerHTML = leagueData.players.map(p => `
+                        <div class="bg-gray-900 p-3 rounded-lg border border-gray-800 flex items-center justify-between">
+                            <div>
+                                <span class="font-medium text-white block">${p.name}</span>
+                                <span class="text-xs text-blue-400 truncate max-w-[150px] block">${p.hcunits ? p.hcunits : 'Sin enlace HCUnits'}</span>
+                            </div>
+                            <button type="button" onclick="deletePlayer(${p.id})" class="text-red-400 hover:text-red-300 text-sm p-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            let adminRoundSelectOpts = '';
+            for(let i=1; i<=10; i++) {
+                adminRoundSelectOpts += `<option value="${i}">Jornada ${i} - ${roundFormats[i].split(': ')[1]}</option>`;
+            }
+            const adminSelectElem = document.getElementById('admin-round-select');
+            if(adminSelectElem) {
+                const selectedVal = adminSelectElem.value || 1;
+                adminSelectElem.innerHTML = adminRoundSelectOpts;
+                adminSelectElem.value = selectedVal;
+                renderAdminMatches(selectedVal);
+            }
+        }
+
+        function renderAdminMatches(roundNum) {
+            const container = document.getElementById('admin-matches-container');
+            if(!container) return;
+            
+            const matches = leagueData.rounds[roundNum] || [];
+
+            if(matches.length === 0) {
+                container.innerHTML = `<p class="text-sm text-gray-500">No hay emparejamientos creados para la Jornada ${roundNum}. Pulsa en "Generar Emparejamientos".</p>`;
+                return;
+            }
+
+            container.innerHTML = matches.map((m, idx) => `
+                <div class="bg-gray-900 p-4 rounded-lg border border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="w-full sm:w-1/3 flex items-center justify-end gap-2">
+                        <span class="font-semibold text-white">${m.p1}</span>
+                        <select onchange="updateMatchStatus(${roundNum}, ${idx}, 1, this.value)" class="bg-brand-card text-xs text-gray-300 border border-gray-700 rounded p-1">
+                            <option value="normal" ${m.status1 === 'normal' ? 'selected' : ''}>Jugó</option>
+                            <option value="np" ${m.status1 === 'np' ? 'selected' : ''}>No Presentado (-1)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="number" value="${m.score1}" onchange="updateMatchScore(${roundNum}, ${idx}, this.value, document.getElementById('m${roundNum}_${idx}_p2').value)" class="w-16 bg-brand-card border border-gray-700 rounded text-center py-1 text-white font-bold">
+                        <span class="text-gray-500 font-bold">-</span>
+                        <input type="number" id="m${roundNum}_${idx}_p2" value="${m.score2}" onchange="updateMatchScore(${roundNum}, ${idx}, document.getElementById('m${roundNum}_${idx}_p1').value, this.value)" class="w-16 bg-brand-card border border-gray-700 rounded text-center py-1 text-white font-bold">
+                    </div>
+                    <div class="w-full sm:w-1/3 flex items-center justify-start gap-2">
+                        <select onchange="updateMatchStatus(${roundNum}, ${idx}, 2, this.value)" class="bg-brand-card text-xs text-gray-300 border border-gray-700 rounded p-1">
+                            <option value="normal" ${m.status2 === 'normal' ? 'selected' : ''}>Jugó</option>
+                            <option value="np" ${m.status2 === 'np' ? 'selected' : ''}>No Presentado (-1)</option>
+                        </select>
+                        <span class="font-semibold text-white">${m.p2}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Inicializar interfaz de la aplicación
+        updateUI();
+    </script>
+</body>
+</html>
